@@ -13,7 +13,7 @@ int main(void)
   /*insere arquivo dicionario na memoria como um
     array de strings */
   dict_t dict;
-  set_dict("dict/brazilian", &dict);
+  set_dict("brazilian", &dict);
   /*compara palavras do texto com do dict, e marca palavras
     não encontradas com colchetes, imprime texto na stdout*/
   mispelling_mark(&dict,stdout);

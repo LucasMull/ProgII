@@ -59,10 +59,14 @@ cstring_cmp(const void *a, const void *b)
 } 
 
 void
-set_dict(char dict_location[], dict_t *dict)
+set_dict(char dict_lang[], dict_t *dict)
 {
+  //anexa linguagem do dicionário escolhido ao path de dicionarios
+  char dict_location[100] = "/usr/share/dict/";
+  strcat(dict_location,dict_lang);
+
   FILE *f_dict=fopen(dict_location, "rb");
-  assert(f_dict); //checa se arq foi lido
+  assert(f_dict); //checa se arq foi lido (ou existe);
 
   parse_dict(dict, f_dict); //configura var dicionario
 

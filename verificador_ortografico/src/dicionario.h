@@ -10,7 +10,7 @@ typedef struct {
 char* word_tolower(const char *word);
 
 /*seta valores dos membros do struct dict_t*/
-void set_dict(char dict_location[], dict_t *dict);
+void set_dict(char dict_lang[], dict_t *dict);
 
 /*libera espaço alocado para dict_t*/
 void destroy_dict(dict_t *dict);
