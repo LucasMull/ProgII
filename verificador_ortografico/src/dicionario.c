@@ -21,8 +21,8 @@ parse_dict(dict_t *dict, FILE *f_dict)
     armazena as palavras em dict->wlist*/
   dict->wcount = 0;
   while (fgets(word, MAX_WORD_SIZE-1, f_dict) != NULL){
-    /*se qtd de linhas for multiplo do coeficiente especificado
-      então aloca espaço na memória para prosseguir com leitura
+    /*se módulo da qtd de linhas com coeficiente especificado for
+      zero, então aloca espaço na memória para prosseguir com leitura
       do arquivo*/
     if (dict->wcount % FILESIZE_COEFICIENT == 0){
       ++memblock;
