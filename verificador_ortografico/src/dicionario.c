@@ -6,18 +6,6 @@
 
 #include "dicionario.h"
 
-/* converte uppercase para lowercase */
-char*
-word_tolower(const char *word){
-  char *ptr_word = (char*)word;
-  while (isalpha(*ptr_word)){
-    *ptr_word = tolower(*ptr_word);
-    ++ptr_word;
-  }
-
-  return (char*)word;
-}
-
 static void
 parse_dict(dict_t *dict, FILE *f_dict)
 {
@@ -39,23 +27,23 @@ parse_dict(dict_t *dict, FILE *f_dict)
   long i=0;
   char word[MAX_WORD_SIZE]; //armazena palavra por linha
   while (fgets(word, MAX_WORD_SIZE-1, f_dict) != NULL){
-    word_tolower(word); //converte chars maiusc para minusc
-    //aloca mem para palavra sem incluir chars '\n'
+    //aloca mem para palavra sem incluir newline
     dict->wlist[i] = strndup(word,strlen(word)-1);
     ++i;
   }
+  //checa se contagem de linhas inicial é igual contagem de palavras
   assert(i == dict->wcount);
   //checa se terminou a leitura corretamente
   assert(feof(f_dict));
 }
 
-/*retorna const char com strcmp para utilizar no qsort()*/
+/*retorna const char com strcasecmp para utilizar no qsort()*/
 static int
 cstring_cmp(const void *a, const void *b) 
 { 
     const char **ia = (const char **)a;
     const char **ib = (const char **)b;
-    return strcmp(*ia, *ib);
+    return strcasecmp(*ia, *ib);
 } 
 
 void
@@ -84,15 +72,11 @@ destroy_dict(dict_t *dict){
   free(dict->wlist);
 }
 
-/*binary search com strcmp para comparar uma palavra-chave
+/*binary search com strcasecmp para comparar uma palavra-chave
   com uma array de strings pre-ordenadas*/
 int
 dict_bsearch(const dict_t *dict, const char *word)
 {
-  char lower_word[MAX_WORD_SIZE];
-  strncpy(lower_word,word,MAX_WORD_SIZE-1);
-  word_tolower(lower_word);
-
   int top=dict->wcount-1;
   int low=0;
   int mid;
@@ -100,7 +84,7 @@ dict_bsearch(const dict_t *dict, const char *word)
   int cmp;
   while (low <= top){
     mid = ((unsigned long)low + (unsigned long)top) >> 1;
-    cmp = strcmp(lower_word, dict->wlist[mid]);
+    cmp = strcasecmp(word, dict->wlist[mid]);
     if (cmp == 0)
       return 0;
     if (cmp < 0)
@@ -126,13 +110,14 @@ mispelling_mark(const dict_t *dict, FILE* out_stream)
       ++i; //e incremente posição para proximo char
     } else { //char não é alpha
       word[i] = '\0'; //concluir palavra formada
-      //se palavra n for alpha, ou existir no dict
-      if ((i==0) || (dict_bsearch(dict,word) == 0))
+      if ((i==0) || (dict_bsearch(dict,word) == 0)){ //se palavra n for alpha, ou existir no dict
         fputs(word,out_stream); //imprime palavra s/colchetes
-      else //se não estiver no dict
+      } else { //se não estiver no dict
         fprintf(out_stream,"[%s]",word); //imprime com colchetes
-      fputc(c,out_stream);
-      i = 0;
+      }
+      i = 0; //reseta índice para formar nova palavra
+
+      fputc(c,out_stream);//printa char não alpha encontrado
     }
   }
 }

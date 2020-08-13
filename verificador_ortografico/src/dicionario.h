@@ -5,10 +5,6 @@ typedef struct {
   long wcount; //word count (qtd de palavras)
 } dict_t;
 
-/* converte uppercase para lowercase,
-  retorna ponteiro para palavra convertida*/
-char* word_tolower(const char *word);
-
 /*seta valores dos membros do struct dict_t*/
 void set_dict(char dict_lang[], dict_t *dict);
 
