@@ -6,7 +6,7 @@
 
 #include "dicionario.h"
 
-#define FILESIZE_COEFICIENT 131072
+#define FILESIZE_COEFICIENT 8192
 
 /* extrai informações do arquivo dicionário em um array de strings,
   com cada índice representando uma palavra e linha do dicionário */
@@ -55,6 +55,11 @@ set_dict(char dict_lang[], dict_t *dict)
   strcat(dict_location,dict_lang);
 
   FILE *f_dict=fopen(dict_location, "rb");
+  if (!f_dict){
+    strcpy(dict_location,"dict/");
+    strcat(dict_location,dict_lang);
+    f_dict=fopen(dict_location, "rb");
+  }
   assert(f_dict);
 
   parse_dict(dict, f_dict); //set membros do struct dict
