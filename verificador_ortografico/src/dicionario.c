@@ -40,7 +40,7 @@ parse_dict(dict_t *dict, FILE *f_dict)
 
 /*retorna const char com strcasecmp para utilizar no qsort()*/
 static int
-cstring_cmp(const void *a, const void *b) 
+cstrcmp(const void *a, const void *b) 
 { 
     const char **ia = (const char **)a;
     const char **ib = (const char **)b;
@@ -62,10 +62,10 @@ set_dict(char dict_lang[], dict_t *dict)
   }
   assert(f_dict);
 
-  parse_dict(dict, f_dict); //set membros do struct dict
+  parse_dict(dict, f_dict); //aloca palavras do dicionario no struct dict
 
   //ordena palavras do dicionario para bsearch
-  qsort(dict->wlist,dict->wcount,sizeof(char*),cstring_cmp);
+  qsort(dict->wlist,dict->wcount,sizeof(char*),cstrcmp);
 
   fclose(f_dict);
 }
@@ -83,7 +83,7 @@ destroy_dict(dict_t *dict){
 int
 dict_bsearch(const dict_t *dict, const char *word)
 {
-  int top=dict->wcount-1;
+  int top = dict->wcount-1;
   int low=0;
   int mid;
 
@@ -115,8 +115,8 @@ mispelling_mark(const dict_t *dict, FILE* out_stream)
   word, quando não for char alfabético, a palavra formada é então
   analisada para ver se existe ou não no dicionário*/
   int i=0;
-  while ((c=getchar()) != EOF){
-    //se c for alfabético então concatena no final da palvra
+  while ((c = getchar()) != EOF){
+    //se c for char alfabético então concatena no final da palvra
     //senão verifica existência da palavra formada no dicionário
     if (isalpha(c)){
       word[i] = c;

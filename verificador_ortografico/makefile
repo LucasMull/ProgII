@@ -32,4 +32,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 clean :
-	-rm -rf ortografia $(OBJDIR) debug.out
+	-rm -rf $(OBJDIR) debug.out
+
+purge : clean
+	-rm -f ortografia *.txt
