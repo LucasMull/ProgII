@@ -110,30 +110,35 @@ mispelling_mark(const dict_t *dict, FILE* out_stream)
   char word[MAX_WORD_SIZE]; //formação da palavra a ser verificada
 
   /* c lê o stdin um char por vez, com a condição de saída de chegar
-  no fim do arquivo (EOF).
+  no fim do arquivo.
   enquanto c for um char alfabético, a palavra é formada na variável
   word, quando não for char alfabético, a palavra formada é então
   analisada para ver se existe ou não no dicionário*/
   int i=0;
-  while ((c = getchar()) != EOF){
-    //se c for char alfabético então concatena no final da palvra
-    //senão verifica existência da palavra formada no dicionário
-    if (isalpha(c)){
-      word[i] = c;
-      ++i;
-    } else {
-      word[i] = '\0'; //concluir palavra formada
-      //se palavra n for alpha, ou existir no dict imprime sem colchetes
-      //senão imprime palavra com colchetes
-      if ((i == 0) || (dict_bsearch(dict,word) == 0)){ 
-        fputs(word,out_stream);
-      } else {
-        fprintf(out_stream,"[%s]",word);
-      }
+  do
+   {
+      c = getchar();
+      if (feof(stdin))
+        break;
+      //se c for char alfabético então concatena no final da palvra
+      //senão verifica existência da palavra formada no dicionário
+      if (isalpha(c)){
+        word[i] = c;
+        ++i;
+      else {
+        word[i] = '\0'; //concluir palavra formada
+        //se palavra n for alpha, ou existir no dict imprime sem colchetes
+        //senão imprime palavra com colchetes
+        if ((i == 0) || (dict_bsearch(dict,word) == 0)){ 
+          fputs(word,out_stream);
+        } else {
+          fprintf(out_stream,"[%s]",word);
+        }
 
-      i = 0; //reseta índice para formar nova palavra
-      fputc(c,out_stream);//printa char não alpha encontrado
-    }
-  }
+        i = 0; //reseta índice para formar nova palavra
+        fputc(c,out_stream);//printa char não alpha encontrado
+      }
+   }
+  while(!ferror(stdin));
 }
 
