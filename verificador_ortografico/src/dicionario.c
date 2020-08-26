@@ -125,7 +125,7 @@ mispelling_mark(const dict_t *dict, FILE* out_stream)
       if (isalpha(c)){
         word[i] = c;
         ++i;
-      else {
+      } else {
         word[i] = '\0'; //concluir palavra formada
         //se palavra n for alpha, ou existir no dict imprime sem colchetes
         //senão imprime palavra com colchetes
