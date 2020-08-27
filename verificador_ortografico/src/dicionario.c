@@ -6,36 +6,36 @@
 
 #include "dicionario.h"
 
-#define FILESIZE_COEFICIENT 8192
+#define FILESIZE_COEFICIENT 10000
 
 /* extrai informações do arquivo dicionário em um array de strings,
   com cada índice representando uma palavra e linha do dicionário */
 static void
-parse_dict(dict_t *dict, FILE *f_dict)
+dictionary_parse(dictionary_st *dictionary, FILE *f_dictionary)
 {
   long memblock=0; //conta qtd de blocos criados na memória
   char word[MAX_WORD_SIZE]; //armazena palavra por linha
-  dict->wlist = NULL;
+  dictionary->word_list = NULL;
 
   /*lê arq linha por linha, cada linha uma palavra, e
-    armazena as palavras em dict->wlist*/
-  dict->wcount = 0;
-  while (fgets(word, MAX_WORD_SIZE-1, f_dict) != NULL){
+    armazena as palavras em dictionary->word_list*/
+  dictionary->num_word = 0;
+  while (fgets(word, MAX_WORD_SIZE-1, f_dictionary) != NULL){
     /*se módulo da qtd de linhas com coeficiente especificado for
       zero, então aloca espaço na memória para prosseguir com leitura
       do arquivo*/
-    if (dict->wcount % FILESIZE_COEFICIENT == 0){
+    if (dictionary->num_word % FILESIZE_COEFICIENT == 0){
       ++memblock;
-      dict->wlist = realloc(dict->wlist,memblock*FILESIZE_COEFICIENT*sizeof(char*));
-      assert(dict->wlist);
+      dictionary->word_list = realloc(dictionary->word_list,memblock*FILESIZE_COEFICIENT*sizeof(char*));
+      assert(dictionary->word_list);
     }
     //aloca mem para palavra sem incluir newline
-    dict->wlist[dict->wcount] = strndup(word,strlen(word)-1);
-    assert(dict->wlist[dict->wcount]);
+    dictionary->word_list[dictionary->num_word] = strndup(word,strlen(word)-1);
+    assert(dictionary->word_list[dictionary->num_word]);
 
-    ++dict->wcount;
+    ++dictionary->num_word;
   }
-  assert(feof(f_dict));
+  assert(feof(f_dictionary));
 }
 
 /*retorna const char com strcasecmp para utilizar no qsort()*/
@@ -48,49 +48,49 @@ cstrcmp(const void *a, const void *b)
 } 
 
 void
-set_dict(char dict_lang[], dict_t *dict)
+dictionary_set(char dictionary_lang[], dictionary_st *dictionary)
 {
   //anexa linguagem do dicionário escolhido ao path de dicionarios
-  char dict_location[100] = "/usr/share/dict/";
-  strcat(dict_location,dict_lang);
+  char dictionary_location[100] = "/usr/share/dict/";
+  strcat(dictionary_location,dictionary_lang);
 
-  FILE *f_dict=fopen(dict_location, "rb");
-  if (!f_dict){
-    strcpy(dict_location,"dict/");
-    strcat(dict_location,dict_lang);
-    f_dict=fopen(dict_location, "rb");
+  FILE *f_dictionary = fopen(dictionary_location, "rb");
+  if (!f_dictionary){
+    strcpy(dictionary_location,"dict/");
+    strcat(dictionary_location,dictionary_lang);
+    f_dictionary = fopen(dictionary_location, "rb");
   }
-  assert(f_dict);
+  assert(f_dictionary);
 
-  parse_dict(dict, f_dict); //aloca palavras do dicionario no struct dict
+  dictionary_parse(dictionary, f_dictionary); //aloca palavras do dicionario no struct dictionary
 
   //ordena palavras do dicionario para bsearch
-  qsort(dict->wlist,dict->wcount,sizeof(char*),cstrcmp);
+  qsort(dictionary->word_list,dictionary->num_word,sizeof(char*),cstrcmp);
 
-  fclose(f_dict);
+  fclose(f_dictionary);
 }
 
-/*libera espaço alocado para dict_t*/
+/*libera espaço alocado para dictionary_st*/
 void
-destroy_dict(dict_t *dict){
-  for (long i=0; i < dict->wcount; ++i)
-    free(dict->wlist[i]);
-  free(dict->wlist);
+dictionary_destroy(dictionary_st *dictionary){
+  for (long i=0; i < dictionary->num_word; ++i)
+    free(dictionary->word_list[i]);
+  free(dictionary->word_list);
 }
 
 /*binary search com strcasecmp para comparar uma palavra-chave
   com uma array de strings pre-ordenadas*/
 int
-dict_bsearch(const dict_t *dict, const char *word)
+dictionary_bsearch(const dictionary_st *kdictionary, const char *kword)
 {
-  int top = dict->wcount-1;
-  int low=0;
+  int top = kdictionary->num_word-1;
+  int low = 0;
   int mid;
 
   int cmp;
   while (low <= top){
     mid = ((unsigned long)low + (unsigned long)top) >> 1;
-    cmp = strcasecmp(word, dict->wlist[mid]);
+    cmp = strcasecmp(kword, kdictionary->word_list[mid]);
     if (cmp == 0)
       return 0;
     if (cmp < 0)
@@ -104,7 +104,7 @@ dict_bsearch(const dict_t *dict, const char *word)
 
 /*marca palavras com erros de escrita com colchetes*/
 void
-mispelling_mark(const dict_t *dict, FILE* out_stream)
+stream_misspell_check(const dictionary_st *kdictionary, FILE* out_stream)
 {
   int c; //leitura de chars do stdin
   char word[MAX_WORD_SIZE]; //formação da palavra a ser verificada
@@ -127,9 +127,9 @@ mispelling_mark(const dict_t *dict, FILE* out_stream)
         ++i;
       } else {
         word[i] = '\0'; //concluir palavra formada
-        //se palavra n for alpha, ou existir no dict imprime sem colchetes
+        //se palavra n for alpha, ou existir no dictionary imprime sem colchetes
         //senão imprime palavra com colchetes
-        if ((i == 0) || (dict_bsearch(dict,word) == 0)){ 
+        if ((i == 0) || (dictionary_bsearch(kdictionary,word) == 0)){ 
           fputs(word,out_stream);
         } else {
           fprintf(out_stream,"[%s]",word);
