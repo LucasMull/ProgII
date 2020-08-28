@@ -115,30 +115,26 @@ stream_misspell_check(const dictionary_st *kdictionary, FILE* out_stream)
   word, quando não for char alfabético, a palavra formada é então
   analisada para ver se existe ou não no dicionário*/
   int i=0;
-  do
-   {
-      c = getchar();
-      if (feof(stdin))
-        break;
-      //se c for char alfabético então concatena no final da palvra
-      //senão verifica existência da palavra formada no dicionário
-      if (isalpha(c)){
-        word[i] = c;
-        ++i;
+  while (EOF != (c = getchar())){
+    //se c for char alfabético então concatena no final da palvra
+    //senão verifica existência da palavra formada no dicionário
+    if (isalpha(c)){
+      word[i] = c;
+      ++i;
+    } else {
+      word[i] = '\0'; //concluir palavra formada
+      //se palavra n for alpha, ou existir no dictionary imprime sem colchetes
+      //senão imprime palavra com colchetes
+      if ((0 == i) || (dictionary_bsearch(kdictionary,word) == 0)){ 
+        fputs(word,out_stream);
       } else {
-        word[i] = '\0'; //concluir palavra formada
-        //se palavra n for alpha, ou existir no dictionary imprime sem colchetes
-        //senão imprime palavra com colchetes
-        if ((i == 0) || (dictionary_bsearch(kdictionary,word) == 0)){ 
-          fputs(word,out_stream);
-        } else {
-          fprintf(out_stream,"[%s]",word);
-        }
-
-        i = 0; //reseta índice para formar nova palavra
-        fputc(c,out_stream);//printa char não alpha encontrado
+        fprintf(out_stream,"[%s]",word);
       }
-   }
-  while(!ferror(stdin));
+
+      i = 0; //reseta índice para formar nova palavra
+      fputc(c,out_stream);//printa char não alpha encontrado
+    }
+  }
+  assert(feof(stdin));
 }
 

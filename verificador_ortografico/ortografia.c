@@ -8,7 +8,7 @@
 int main(void)
 {
   char *locale = setlocale(LC_CTYPE, "pt_BR.iso88591");
-  assert(locale); //verifica se locale foi setado
+  assert(NULL != locale); //verifica se locale foi setado
 
   /*insere arquivo dicionario na memoria como um
     array de strings */
@@ -16,7 +16,7 @@ int main(void)
   dictionary_set("brazilian", &dictionary);
   /*compara palavras do texto com do dict, e marca palavras
     não encontradas com colchetes, imprime texto na stdout*/
-  stream_misspell_check(&dictionary,stdout);
+  stream_misspell_check(&dictionary, stdout);
   /*libera memória alocada para dicionário*/
   dictionary_destroy(&dictionary);
 
