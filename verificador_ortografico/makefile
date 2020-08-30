@@ -1,5 +1,4 @@
 CFLAGS = -Wall -Werror -pedantic
-LDLIBS = -lm
 CC = gcc
 
 OBJDIR = obj
@@ -9,12 +8,12 @@ OBJS += $(OBJDIR)/dicionario.o
 
 MAIN = ortografia.c
 
-.PHONY : clean all debug
+.PHONY : clean all purge
 
 all: ortografia
 
 ortografia: build
-	$(CC) -o $@ $(OBJS) $(LDLIBS)
+	$(CC) -o $@ $(OBJS)
 
 build: mkdir $(OBJS)
 
