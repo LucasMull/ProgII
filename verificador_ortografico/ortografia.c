@@ -5,7 +5,7 @@
 #include <locale.h>
 #include <assert.h>
 
-#include "src/dicionario.h"
+#include "dicionario.h"
 
 int main(void)
 {
