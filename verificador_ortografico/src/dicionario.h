@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #define MAX_WORD_SIZE 50
 
 typedef struct {

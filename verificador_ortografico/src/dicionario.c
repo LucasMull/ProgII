@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +26,7 @@ dictionary_parse(dictionary_st *dictionary, FILE *f_dictionary)
     /*se módulo da qtd de linhas com coeficiente especificado for
       zero, então aloca espaço na memória para prosseguir com leitura
       do arquivo*/
-    if (dictionary->num_word % FILESIZE_COEFICIENT == 0){
+    if (0 == dictionary->num_word % FILESIZE_COEFICIENT){
       ++memblock;
       dictionary->word_list = realloc(dictionary->word_list,memblock*FILESIZE_COEFICIENT*sizeof(char*));
       assert(dictionary->word_list);
@@ -55,10 +57,14 @@ dictionary_set(char dictionary_lang[], dictionary_st *dictionary)
   strcat(dictionary_location,dictionary_lang);
 
   FILE *f_dictionary = fopen(dictionary_location, "rb");
-  if (!f_dictionary){
+  if (NULL == f_dictionary){
     strcpy(dictionary_location,"dict/");
     strcat(dictionary_location,dictionary_lang);
     f_dictionary = fopen(dictionary_location, "rb");
+
+    if (NULL == f_dictionary){
+      f_dictionary = fopen(dictionary_lang, "rb");
+    }
   }
   assert(f_dictionary);
 
@@ -125,7 +131,7 @@ stream_misspell_check(const dictionary_st *kdictionary, FILE* out_stream)
       word[i] = '\0'; //concluir palavra formada
       //se palavra n for alpha, ou existir no dictionary imprime sem colchetes
       //senão imprime palavra com colchetes
-      if ((0 == i) || (dictionary_bsearch(kdictionary,word) == 0)){ 
+      if ((0 == i) || (0 == dictionary_bsearch(kdictionary,word))){ 
         fputs(word,out_stream);
       } else {
         fprintf(out_stream,"[%s]",word);
