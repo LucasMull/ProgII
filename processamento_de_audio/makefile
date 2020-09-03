@@ -17,7 +17,7 @@ MAIN = main.c
 
 MAIN_O = $(OBJDIR)/ortografia.o
 
-.PHONY : clean all debug
+.PHONY : clean all purge
 
 all: ortografia
 

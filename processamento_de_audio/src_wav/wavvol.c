@@ -39,22 +39,22 @@ int main(int argc, char *argv[])
 
   wav_t *wav = wav_init(inp_stream);
 
-  uint32_t wait;
+  int64_t tmp;
   switch (wav->fmt.bits_sample){
     case 32: //32 bits
       for (int i=0; i < wav->samples_channel; ++i){
-        wait = set_volume*(int32_t)wav->fourb_audio_data[i]; 
-        if (wait < INT_MAX || wait > SHRT_MIN)
-          wav->twob_audio_data[i] = wait;
+        tmp = set_volume * (int32_t)wav->fourb_audio_data[i]; 
+        if ((tmp < INT_MAX) && (tmp > INT_MIN))
+          wav->twob_audio_data[i] = tmp;
       }
       fwrite(wav, 44, 1, out_stream);
       fwrite(wav->fourb_audio_data, wav->data.sub_chunk_2size, 1, out_stream);
       break;
     case 16: //16 bits
       for (int i=0; i < wav->samples_channel; ++i){
-        wait = set_volume*(int16_t)wav->twob_audio_data[i]; 
-        if (wait < SHRT_MAX || wait > SHRT_MIN)
-          wav->twob_audio_data[i] = wait;
+        tmp = set_volume * (int16_t)wav->twob_audio_data[i]; 
+        if ((tmp < SHRT_MAX) && (tmp > SHRT_MIN))
+          wav->twob_audio_data[i] = tmp;
       }
       fwrite(wav, 44, 1, out_stream);
       fwrite(wav->twob_audio_data, wav->data.sub_chunk_2size, 1, out_stream);
