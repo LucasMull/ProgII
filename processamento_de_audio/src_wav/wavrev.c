@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
   FILE *out_stream = stdout, *inp_stream = stdin;
 
   for (int i=1; i < argc; ++i){
-    if (argv[i][0] == '-'){
+    if ('-' == argv[i][0]){
       switch (argv[i][1]){
         case 'i':
           inp_stream = fopen(argv[++i],"rb");
@@ -27,17 +27,19 @@ int main(int argc, char *argv[])
     }
   }
 
-  wav_t *wav = wav_init(inp_stream);
+  wav_st *wav = wav_init(inp_stream);
+
+  uint8_t *reverse_audio_data = malloc(wav->data.sub_chunk_2size);
+  assert(NULL != reverse_audio_data);
+
+  uint8_t *forward_audio_data = (uint8_t*)wav->twob_audio_data;
 
   int bytes_per_sample = wav->fmt.bits_sample >> 3;
   int sample_index = 0;
 
-  uint8_t *reverse_audio_data = malloc(wav->data.sub_chunk_2size);
-  uint8_t *forward_audio_data = (uint8_t*)wav->twob_audio_data;
-
   int index;
   for (int i=0; i < wav->data.sub_chunk_2size; ++i){
-    if ((i != 0) && (i % bytes_per_sample == 0)){
+    if ((0 != i) && (0 == i % bytes_per_sample)){
       sample_index += 2*bytes_per_sample;
     }
     index = wav->data.sub_chunk_2size - bytes_per_sample - sample_index + i;

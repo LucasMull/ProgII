@@ -8,14 +8,14 @@
 int main(int argc, char *argv[])
 {
   FILE *inp_stream;
-  if ((argc == 3) && (strcmp(argv[1],"-i") == 0)){
+  if ((3 == argc) && (0 == strcmp(argv[1],"-i"))){
     inp_stream = fopen(argv[2],"rb");
-    assert(inp_stream != NULL);
+    assert(NULL != inp_stream);
   } else {
     inp_stream = stdin;
   }
 
-  wav_t *wav = wav_init(inp_stream);
+  wav_st *wav = wav_init(inp_stream);
   fclose(inp_stream);
 
   /* RIFF RELATED */

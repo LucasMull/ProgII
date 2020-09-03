@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
   FILE *out_stream = stdout, *inp_stream = stdin;
 
   for (int i=1; i < argc; ++i){
-    if (argv[i][0] == '-'){
+    if ('-' == argv[i][0]){
       switch (argv[i][1]){
         case 'i':
           inp_stream = fopen(argv[++i],"rb");
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  wav_t *wav = wav_init(inp_stream);
+  wav_st *wav = wav_init(inp_stream);
 
   int16_t *audio_data = (int16_t*)wav->twob_audio_data;
 
