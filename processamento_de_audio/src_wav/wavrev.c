@@ -5,20 +5,20 @@
 
 #include "../src/libwav.h"
 
+
 int main(int argc, char *argv[])
 {
   FILE *out_stream = stdout, *inp_stream = stdin;
-
   for (int i=1; i < argc; ++i){
     if ('-' == argv[i][0]){
       switch (argv[i][1]){
         case 'i':
           inp_stream = fopen(argv[++i],"rb");
-          assert(inp_stream);
+          assert(NULL != inp_stream);
           break;
         case 'o':
           out_stream = fopen(argv[++i],"wb");
-          assert(out_stream);
+          assert(NULL != out_stream);
           break;
         default:
           fprintf(stderr,"ERRO: Opçao invalida\n\n");
@@ -32,18 +32,16 @@ int main(int argc, char *argv[])
   uint8_t *reverse_audio_data = malloc(wav->data.sub_chunk_2size);
   assert(NULL != reverse_audio_data);
 
-  uint8_t *forward_audio_data = (uint8_t*)wav->twob_audio_data;
-
-  int bytes_per_sample = wav->fmt.bits_sample >> 3;
+  int bytes_sample = wav->fmt.bits_sample >> 3;
   int sample_index = 0;
 
   int index;
   for (int i=0; i < wav->data.sub_chunk_2size; ++i){
-    if ((0 != i) && (0 == i % bytes_per_sample)){
-      sample_index += 2*bytes_per_sample;
+    if ((0 != i) && (0 == i % bytes_sample)){
+      sample_index += 2 * bytes_sample;
     }
-    index = wav->data.sub_chunk_2size - bytes_per_sample - sample_index + i;
-    reverse_audio_data[i] = forward_audio_data[index];
+    index = wav->data.sub_chunk_2size - bytes_sample - sample_index + i;
+    reverse_audio_data[i] = wav->audio_data.one_b[index];
   }
 
   fwrite(wav, 44, 1, out_stream);

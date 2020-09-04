@@ -5,6 +5,7 @@
 
 #include "../src/libwav.h"
 
+
 int main(int argc, char *argv[])
 {
   FILE *inp_stream;
