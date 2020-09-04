@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
   uint8_t *reverse_audio_data = malloc(wav->data.sub_chunk_2size);
   assert(NULL != reverse_audio_data);
 
-  int bytes_sample = wav->fmt.bits_sample >> 3;
+  int bytes_sample = wav->fmt.bits_sample >> 2;
   int sample_index = 0;
 
   int index;

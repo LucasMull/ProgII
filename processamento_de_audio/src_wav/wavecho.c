@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
   
   int16_t tmp;
   for (int i = delay_ms + 1; i < wav->data.sub_chunk_2size; ++i){
-    tmp = (uint8_t)(clone[i] + echo_rate * clone[i-delay_ms]);
-    if ((SHRT_MIN < tmp) && (SHRT_MAX > tmp)){
+    tmp = (int16_t)(clone[i] + echo_rate * clone[i - delay_ms]);
+    if ((CHAR_MIN < tmp) && (CHAR_MAX > tmp)){
       wav->audio_data.one_b[i] = tmp;
     }
   }
