@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -9,6 +11,9 @@
 
 int main(int argc, char *argv[])
 {
+  /*realiza a leitura dos argumentos fornecidos pelo usuário,
+    -i: desvio de input
+    -o: desvio de output*/
   FILE *out_stream = stdout, *inp_stream = stdin;
   for (int i=1; i < argc; ++i){
     if ('-' == argv[i][0]){
@@ -30,14 +35,17 @@ int main(int argc, char *argv[])
 
   wav_st *wav = wav_init(inp_stream);
   
+  /*temporário que consegue lidar com amostragens de diferentes bytes por amostra*/
   union {
     int8_t *one_b;
     int16_t *two_b;
     int32_t *four_b;
   } tmp;
 
+  /*seleciona amplitude absoluta máxima atingida entre todas as amostras,
+    e normaliza todas a amostras a partir da aplicação de uma fórmula
+    relacionando a amplitude máxima encontrada*/
   int64_t max_amplitude = 0;
-
   switch (wav->fmt.bits_sample){
   case 8: //8 bits
       tmp.one_b = (int8_t*)wav->audio_data.one_b;

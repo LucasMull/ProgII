@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +10,9 @@
 
 int main(int argc, char *argv[])
 {
+  /*realiza a leitura dos argumentos fornecidos pelo usuário,
+    -i: desvio de input  
+    -o: desvio de output */  
   FILE *out_stream = stdout, *inp_stream = stdin;
   for (int i=1; i < argc; ++i){
     if ('-' == argv[i][0]){
@@ -31,11 +36,16 @@ int main(int argc, char *argv[])
 
   uint8_t *reverse_audio_data = malloc(wav->data.sub_chunk_2size);
   assert(NULL != reverse_audio_data);
-
-  int bytes_sample = wav->fmt.bits_sample / 8;
-  int sample_index = 0;
-
+  /*para este laço, a leitura é feita byte a byte, portanto para
+    conciliar .wav de diferentes qtd de bits por canal, é necessário
+    reservar uma variável bytes_sample se movimentar apropriadamente 
+    pelos índices.
+    
+    sample_index indica quando começa a leitura de uma nova amostra,
+    e index cálcula um índice para fazer o armazenamento inverso*/
   int index;
+  int sample_index = 0;
+  int bytes_sample = wav->fmt.bits_sample / 8;
   for (int i=0; i < wav->data.sub_chunk_2size; ++i){
     if ((0 != i) && (0 == i % bytes_sample)){
       sample_index += 2 * bytes_sample;

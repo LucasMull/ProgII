@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -8,6 +10,10 @@
 
 int main(int argc, char *argv[])
 {
+  /*realiza a leitura dos argumentos fornecidos pelo usuário,
+    -l: fator de amplificação
+    -i: desvio de input
+    -o: desvio de output*/
   FILE *out_stream = stdout, *inp_stream = stdin;
   float amplify_ratio = 1.0;
   for (int i=1; i < argc; ++i){
@@ -39,6 +45,10 @@ int main(int argc, char *argv[])
   assert(2 == wav->fmt.num_channels); //só funciona com estéreo
   assert(16 == wav->fmt.bits_sample);
   
+  /*pelo fator de amplificação fornecido, e pela diferença entre os canais
+  esquerdo e direito, é gerado um produto que ao ser subtraido/somado com
+  os canais esquerdo e direito respecticamente resulta num efeito de
+  "distanciamento" entre as saídas estéreo*/
   int64_t diff;
   int64_t l_tmp, r_tmp;
   for (int i=0; i < wav->samples_channel; i += 2){

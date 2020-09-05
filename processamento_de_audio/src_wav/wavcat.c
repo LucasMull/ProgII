@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,9 +10,12 @@
 
 int main(int argc, char *argv[])
 {
+  /*realiza a leitura dos argumentos fornecidos pelo usuário,
+    -o: desvio de output 
+    default: considera que o arg atual se trata de um arquivo .wav a
+      ser aberto e manipulado.  */  
   FILE *out_stream = stdout, *inp_stream;
   wav_st *cat = NULL, *wav;
-
   for (int i=1; i < argc; ++i){
     switch (argv[i][0]){
     case '-':
@@ -28,7 +33,11 @@ int main(int argc, char *argv[])
         assert(NULL != inp_stream);
 
         wav = wav_init(inp_stream);
-
+        
+        /*soma as informações referentes à tamanho do header do arquivo
+          .wav obtido, com as do arquivo principal (cat), realoca espaço
+          de acordo com o novo tamanho de aúdio, e copia o conteúdo do
+          arquivo obtido ao final do arquivo original (concatenação)*/
         if (NULL != cat){ 
           assert(cat->fmt.sample_rate == wav->fmt.sample_rate);
 

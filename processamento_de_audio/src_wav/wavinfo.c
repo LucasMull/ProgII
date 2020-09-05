@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,12 +10,20 @@
 
 int main(int argc, char *argv[])
 {
-  FILE *inp_stream;
-  if ((3 == argc) && (0 == strcmp(argv[1],"-i"))){
+  FILE *inp_stream = stdin;
+  /*única opção possível pro executável a ser gerado é "-i [arqv]"
+    portanto, o total de argumentos é limitado em no máximo 3,
+    contando o próprio executável*/
+  assert(argc <= 3);
+  /*verifica se opção do usuário bate com "-i", e então
+    tenta criar o arquivo apontado */
+  if (3 == argc){
+    if (0 != strcmp(argv[1], "-i")){
+      fprintf(stderr,"\nERRO: opcao invalida\n\n");
+      exit(EXIT_FAILURE);
+    }
     inp_stream = fopen(argv[2],"rb");
     assert(NULL != inp_stream);
-  } else {
-    inp_stream = stdin;
   }
 
   wav_st *wav = wav_init(inp_stream);

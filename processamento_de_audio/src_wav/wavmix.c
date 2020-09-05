@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,9 +11,12 @@
 
 int main(int argc, char *argv[])
 {
+  /*realiza a leitura dos argumentos fornecidos pelo usuário,
+    -o: desvio de output 
+    default: considera que o arg atual se trata de um arquivo .wav a
+      ser aberto e manipulado.  */  
   FILE *out_stream = stdout, *inp_stream;
   wav_st *mix = NULL, *wav;
-
   for (int i=1; i < argc; ++i){
     switch (argv[i][0]){
     case '-':
@@ -30,9 +35,14 @@ int main(int argc, char *argv[])
 
         wav = wav_init(inp_stream);
 
+        /*soma as samples do arquivo .wav obtido pelo argumento, com
+          as do arquivo principal (mix), não há um limite de quantas
+          somas podem ser realizadas no mix*/
         if (NULL != mix){ 
+          /*se o arquivo obtido for maior do que o principal, realocar
+            espaço para que o original tenha um valor exato ao do obtido
+            e atualizar informações do header*/
           assert(mix->fmt.sample_rate == wav->fmt.sample_rate);
-
           if (mix->riff.chunk_size < wav->riff.chunk_size){
             int old_size = mix->data.sub_chunk_2size;
 

@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +11,11 @@
 
 int main(int argc, char *argv[])
 {
+  /*realiza a leitura dos argumentos fornecidos pelo usuário,
+    -t: delay entre o eco e o original
+    -l: intensidade do eco
+    -i: desvio de input  
+    -o: desvio de output */  
   FILE *out_stream = stdout, *inp_stream = stdin;
   float echo_rate = 0.5;
   long delay_ms = 1000;
@@ -19,6 +26,7 @@ int main(int argc, char *argv[])
           delay_ms = strtol(argv[++i], NULL, 10);
           if ((0 > delay_ms) || (UINT_MAX < delay_ms)){
             fprintf(stderr,"\nERRO: delay menor que 0 ou overflow\n\n");
+            exit(EXIT_FAILURE);
           }
           break;
       case 'l':
@@ -48,6 +56,9 @@ int main(int argc, char *argv[])
   int8_t *clone = malloc(wav->data.sub_chunk_2size);
   memcpy(clone, wav->audio_data.one_b, wav->data.sub_chunk_2size);
   
+  /*percorre o .wav byte a byte independente de sua qtd de bits/canal
+    e aplicar uma fórmula a partir de um clone do audio original para
+    colher os samples do atraso que serão inseridos ao aúdio original*/
   int16_t tmp;
   for (int i = delay_ms + 1; i < wav->data.sub_chunk_2size; ++i){
     tmp = (int16_t)(clone[i] + echo_rate * clone[i - delay_ms]);

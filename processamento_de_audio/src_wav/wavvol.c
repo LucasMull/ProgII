@@ -1,3 +1,5 @@
+//GRR20197160 Lucas Müller
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +11,10 @@
 
 int main(int argc, char *argv[])
 {
+  /*realiza a leitura dos argumentos fornecidos pelo usuário,
+    -l: nível relativo do volume
+    -i: desvio de input  
+    -o: desvio de output */  
   FILE *out_stream = stdout, *inp_stream = stdin;
   float set_volume = 1.0;
   for (int i=1; i < argc; ++i){
@@ -17,7 +23,7 @@ int main(int argc, char *argv[])
       case 'l':
           set_volume = strtof(argv[++i], NULL);
           if ((set_volume < 0.0) || (set_volume > 10.0)){
-            fprintf(stderr,"\nERRO: valor de volume invalido\n\n");
+            fprintf(stderr,"\nERRO: nível de volume invalido\n\n");
             exit(EXIT_FAILURE);
           }
           break;
@@ -38,6 +44,8 @@ int main(int argc, char *argv[])
 
   wav_st *wav = wav_init(inp_stream);
 
+  /*realiza a multiplicação em cada canal pelo volume fornecido,
+    e ignorando casos em que ocorra overflow/underflow*/
   int64_t tmp;
   switch (wav->fmt.bits_sample){
   case 8: //8 bits
