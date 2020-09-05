@@ -2,41 +2,38 @@ CFLAGS = -Wall -Werror -pedantic
 LDLIBS = -lm
 CC = gcc
 
-SRCDIR = src_wav
-OBJDIR = obj
 
-OBJS = $(OBJDIR)/wavcat.o
-OBJS += $(OBJDIR)/wavecho.o
-OBJS += $(OBJDIR)/wavmix.o
-OBJS += $(OBJDIR)/wavnorm.o
-OBJS += $(OBJDIR)/wavrev.o
-OBJS += $(OBJDIR)/wavvol.o
-OBJS += $(OBJDIR)/wavwide.o
+EXEC = wavcat
+EXEC += wavecho
+EXEC += wavmix
+EXEC += wavnorm
+EXEC += wavrev
+EXEC += wavvol
+EXEC += wavwide
+EXEC += wavinfo
 
-MAIN = main.c
+SRC = wavcat.c
+SRC += wavecho.c
+SRC += wavmix.c
+SRC += wavnorm.c
+SRC += wavrev.c
+SRC += wavvol.c
+SRC += wavwide.c
+SRC += wavinfo.c
 
-MAIN_O = $(OBJDIR)/ortografia.o
+MAIN = libwav.c
 
 .PHONY : clean all purge
 
-all: ortografia
+all: build
 
-ortografia: build
-	$(CC) -o $@ $(OBJS) $(LDLIBS)
+build: $(SRC)
 
-build: mkdir $(MAIN_O) $(OBJS)
-
-mkdir:
-	-mkdir -p $(OBJDIR)
-
-$(MAIN_O): $(MAIN)
-	$(CC) -c $< -o $@ $(CFLAGS)
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) -c $< -o $@ $(CFLAGS)
+%.c: %
+	$(CC) $(MAIN) $@ -o $< $(CFLAGS) $(LDLIBS)
 
 clean :
-	-rm -rf $(OBJDIR) debug.out
+	-rm -rf $(OBJDIR)
 
 purge : clean
-	-rm -f ortografia *.txt
+	-rm -f $(EXEC)
