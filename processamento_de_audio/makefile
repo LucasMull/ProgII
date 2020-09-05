@@ -1,7 +1,10 @@
+#GRR20197160 Lucas Müller
+
 CFLAGS = -Wall -Werror -pedantic
 LDLIBS = -lm
 CC = gcc
 
+EXECDIR = exec
 
 EXEC = wavcat
 EXEC += wavecho
@@ -12,28 +15,17 @@ EXEC += wavvol
 EXEC += wavwide
 EXEC += wavinfo
 
-SRC = wavcat.c
-SRC += wavecho.c
-SRC += wavmix.c
-SRC += wavnorm.c
-SRC += wavrev.c
-SRC += wavvol.c
-SRC += wavwide.c
-SRC += wavinfo.c
-
 MAIN = libwav.c
 
-.PHONY : clean all purge
+.PHONY : all purge
 
-all: build
+all: mkdir $(EXEC)
 
-build: $(SRC)
+mkdir:
+	-mkdir -p $(EXECDIR)
 
-%.c: %
-	$(CC) $(MAIN) $@ -o $< $(CFLAGS) $(LDLIBS)
+$(EXEC): %: %.c
+	$(CC) $(CFLAGS) -o $(EXECDIR)/$@ $< $(MAIN) $(LDLIBS)
 
-clean :
-	-rm -rf $(OBJDIR)
-
-purge : clean
-	-rm -f $(EXEC)
+purge:
+	-rm -rf $(EXECDIR)

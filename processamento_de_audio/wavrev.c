@@ -5,7 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "../src/libwav.h"
+#include "libwav.h"
 
 
 int main(int argc, char *argv[])
