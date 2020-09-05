@@ -1,3 +1,5 @@
+#GRR20197160 Lucas Müller
+
 CFLAGS = -Wall -Werror -pedantic
 CC = gcc
 
@@ -24,7 +26,7 @@ $(OBJDIR)/%.o: %.c
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 clean :
-	-rm -rf $(OBJDIR) debug.out
+	-rm -rf $(OBJDIR)
 
 purge : clean
 	-rm -f ortografia *.txt
