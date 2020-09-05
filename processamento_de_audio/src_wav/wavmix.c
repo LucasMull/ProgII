@@ -47,6 +47,8 @@ int main(int argc, char *argv[])
           }
          
           int32_t tmp_a, tmp_b, tmp_res;
+          /* baseada na equação de mixagem de aúdio de Viktor T. Toth
+            http://www.vttoth.com/CMS/index.php/technical-notes/68 */
           for (int j=0; j < wav->data.sub_chunk_2size; ++j){
             tmp_a = CHAR_MAX+1 + (int32_t)mix->audio_data.one_b[j];
             tmp_b = CHAR_MAX+1 + (int32_t)wav->audio_data.one_b[j];
