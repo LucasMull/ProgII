@@ -37,18 +37,21 @@ int main(int argc, char *argv[])
 
   wav_st *wav = wav_init(inp_stream);
   assert(2 == wav->fmt.num_channels); //só funciona com estéreo
+  assert(16 == wav->fmt.bits_sample);
   
   int64_t diff;
   int64_t l_tmp, r_tmp;
-  int bytes_sample = wav->fmt.bits_sample >> 2;
-  for (int i=0; i < wav->data.sub_chunk_2size; i += bytes_sample){
-    l_tmp = (int64_t)wav->audio_data.one_b[i];
-    r_tmp = (int64_t)wav->audio_data.one_b[i + bytes_sample/2];
+  for (int i=0; i < wav->samples_channel; i += 2){
+    l_tmp = (int64_t)wav->audio_data.two_b[i];
+    r_tmp = (int64_t)wav->audio_data.two_b[i+1];
 
     diff = r_tmp - l_tmp;
 
-    wav->audio_data.one_b[i] = l_tmp - amplify_ratio * diff;
-    wav->audio_data.one_b[i + bytes_sample/2] = r_tmp + amplify_ratio * diff;
+    l_tmp -= amplify_ratio * diff;
+    wav->audio_data.two_b[i] = l_tmp;
+
+    r_tmp += amplify_ratio * diff;
+    wav->audio_data.two_b[i+1] = r_tmp;
   }
 
   fwrite(wav, 44, 1, out_stream);
