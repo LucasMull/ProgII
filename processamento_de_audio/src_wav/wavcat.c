@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[])
 {
-  FILE *out_stream = stdout, *inp_stream = NULL;
+  FILE *out_stream = stdout, *inp_stream;
   wav_st *cat = NULL, *wav;
 
   for (int i=1; i < argc; ++i){
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
           assert(NULL != out_stream);
           break;
         }
-        fprintf(stderr,"ERRO: Opçao invalida\n\n");
+        fprintf(stderr,"ERRO: Opçao invalida ou repetida\n\n");
         exit(EXIT_FAILURE);
     default:
         inp_stream = fopen(argv[i], "rb");
@@ -29,7 +29,9 @@ int main(int argc, char *argv[])
 
         wav = wav_init(inp_stream);
 
-        if (NULL != cat){
+        if (NULL != cat){ 
+          assert(cat->fmt.sample_rate == wav->fmt.sample_rate);
+
           int old_size = cat->data.sub_chunk_2size;
 
           cat->riff.chunk_size += wav->riff.chunk_size; 
@@ -42,7 +44,7 @@ int main(int argc, char *argv[])
 
           wav_clean(wav);
         } else {
-          cat = wav;
+          cat = wav; //primeiro cat simplesmente recebe o wav
         }
 
         fclose(inp_stream);
