@@ -56,12 +56,12 @@ int main(int argc, char *argv[])
             memset(&mix->audio_data.one_b[old_size], 0, mix->data.sub_chunk_2size - old_size);
           }
          
-          int32_t tmp_a, tmp_b, tmp_res;
           /* baseada na equação de mixagem de aúdio de Viktor T. Toth
             http://www.vttoth.com/CMS/index.php/technical-notes/68 */
+          int64_t tmp_a, tmp_b, tmp_res;
           for (int j=0; j < wav->data.sub_chunk_2size; ++j){
-            tmp_a = CHAR_MAX+1 + (int32_t)mix->audio_data.one_b[j];
-            tmp_b = CHAR_MAX+1 + (int32_t)wav->audio_data.one_b[j];
+            tmp_a = CHAR_MAX+1 + (int8_t)mix->audio_data.one_b[j];
+            tmp_b = CHAR_MAX+1 + (int8_t)wav->audio_data.one_b[j];
 
             if ((tmp_a < CHAR_MAX+1) || (tmp_b < CHAR_MAX+1)){
               tmp_res = tmp_a * tmp_b / (CHAR_MAX+1);

@@ -59,12 +59,15 @@ int main(int argc, char *argv[])
   /*percorre o .wav byte a byte independente de sua qtd de bits/canal
     e aplicar uma fórmula a partir de um clone do audio original para
     colher os samples do atraso que serão inseridos ao aúdio original*/
-  int16_t tmp;
+  int64_t tmp;
   for (int i = delay_ms + 1; i < wav->data.sub_chunk_2size; ++i){
-    tmp = (int16_t)(clone[i] + echo_rate * clone[i - delay_ms]);
-    if ((CHAR_MIN < tmp) && (CHAR_MAX > tmp)){
-      wav->audio_data.one_b[i] = tmp;
-    }
+    tmp = (int8_t)(clone[i] + echo_rate * clone[i - delay_ms]);
+    if (tmp > CHAR_MAX)
+      tmp = CHAR_MAX;
+    else if (tmp < CHAR_MIN)
+      tmp = CHAR_MIN;
+
+    wav->audio_data.one_b[i] = tmp;
   }
 
   fwrite(wav, 44, 1, out_stream);

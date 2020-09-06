@@ -43,7 +43,6 @@ int main(int argc, char *argv[])
 
   wav_st *wav = wav_init(inp_stream);
   assert(2 == wav->fmt.num_channels); //só funciona com estéreo
-  assert(16 == wav->fmt.bits_sample);
   
   /*pelo fator de amplificação fornecido, e pela diferença entre os canais
   esquerdo e direito, é gerado um produto que ao ser subtraido/somado com
@@ -51,17 +50,82 @@ int main(int argc, char *argv[])
   "distanciamento" entre as saídas estéreo*/
   int64_t diff;
   int64_t l_tmp, r_tmp;
-  for (int i=0; i < wav->samples_channel; i += 2){
-    l_tmp = (int64_t)wav->audio_data.two_b[i];
-    r_tmp = (int64_t)wav->audio_data.two_b[i+1];
+  switch (wav->fmt.bits_sample){
+  case 8:
+      for (int i=0; i < wav->samples_channel; i += 2){
+        l_tmp = (int8_t)wav->audio_data.one_b[i];
+        r_tmp = (int8_t)wav->audio_data.one_b[i+1];
 
-    diff = r_tmp - l_tmp;
+        diff = r_tmp - l_tmp;
 
-    l_tmp -= amplify_ratio * diff;
-    wav->audio_data.two_b[i] = l_tmp;
+        l_tmp -= amplify_ratio * diff;
+        if (l_tmp > CHAR_MAX)
+          l_tmp = CHAR_MAX;
+        else if (l_tmp < CHAR_MIN)
+          l_tmp = CHAR_MIN;
 
-    r_tmp += amplify_ratio * diff;
-    wav->audio_data.two_b[i+1] = r_tmp;
+        wav->audio_data.one_b[i] = l_tmp;
+
+        r_tmp += amplify_ratio * diff;
+        if (r_tmp > CHAR_MAX)
+          r_tmp = CHAR_MAX;
+        else if (r_tmp < CHAR_MIN)
+          r_tmp = CHAR_MIN;
+
+        wav->audio_data.one_b[i+1] = r_tmp;
+      }
+      break;
+  case 16:
+      for (int i=0; i < wav->samples_channel; i += 2){
+        l_tmp = (int16_t)wav->audio_data.two_b[i];
+        r_tmp = (int16_t)wav->audio_data.two_b[i+1];
+
+        diff = r_tmp - l_tmp;
+
+        l_tmp -= amplify_ratio * diff;
+        if (l_tmp > SHRT_MAX)
+          l_tmp = SHRT_MAX;
+        else if (l_tmp < SHRT_MIN)
+          l_tmp = SHRT_MIN;
+
+        wav->audio_data.two_b[i] = l_tmp;
+
+        r_tmp += amplify_ratio * diff;
+        if (r_tmp > SHRT_MAX)
+          r_tmp = SHRT_MAX;
+        else if (r_tmp < SHRT_MIN)
+          r_tmp = SHRT_MIN;
+
+        wav->audio_data.two_b[i+1] = r_tmp;
+      }
+      break;
+  case 32:
+      for (int i=0; i < wav->samples_channel; i += 2){
+        l_tmp = (int32_t)wav->audio_data.four_b[i];
+        r_tmp = (int32_t)wav->audio_data.four_b[i+1];
+
+        diff = r_tmp - l_tmp;
+
+        l_tmp -= amplify_ratio * diff;
+        if (l_tmp > INT_MAX)
+          l_tmp = INT_MAX;
+        else if (l_tmp < INT_MIN)
+          l_tmp = INT_MIN;
+
+        wav->audio_data.four_b[i] = l_tmp;
+
+        r_tmp += amplify_ratio * diff;
+        if (r_tmp > INT_MAX)
+          r_tmp = INT_MAX;
+        else if (r_tmp < INT_MIN)
+          r_tmp = INT_MIN;
+
+        wav->audio_data.four_b[i+1] = r_tmp;
+      }
+      break;
+  default:
+      fprintf(stderr,"\nERRO: bit sample invalido: %d\n\n", wav->fmt.bits_sample);
+      exit(EXIT_FAILURE);
   }
 
   fwrite(wav, 44, 1, out_stream);

@@ -17,7 +17,7 @@ EXEC += wavinfo
 
 MAIN = libwav.c
 
-.PHONY : all purge
+.PHONY : all clean purge
 
 all: mkdir $(EXEC)
 
@@ -27,5 +27,7 @@ mkdir:
 $(EXEC): %: %.c
 	$(CC) $(CFLAGS) -o $(EXECDIR)/$@ $< $(MAIN) $(LDLIBS)
 
-purge:
+clean:
 	-rm -rf $(EXECDIR)
+
+purge: clean

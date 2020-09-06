@@ -51,25 +51,34 @@ int main(int argc, char *argv[])
   case 8: //8 bits
       for (int i=0; i < wav->samples_channel; ++i){
         tmp = set_volume * (int8_t)wav->audio_data.one_b[i]; 
-        if ((tmp < CHAR_MAX) && (tmp > CHAR_MIN)){
-          wav->audio_data.one_b[i] = tmp;
-        }
+        if (tmp > CHAR_MAX)
+          tmp = CHAR_MAX;
+        else if (tmp < CHAR_MIN)
+          tmp = CHAR_MIN;
+
+        wav->audio_data.one_b[i] = tmp;
       }
       break;
   case 16: //16 bits
       for (int i=0; i < wav->samples_channel; ++i){
         tmp = set_volume * (int16_t)wav->audio_data.two_b[i]; 
-        if ((tmp < SHRT_MAX) && (tmp > SHRT_MIN)){
-          wav->audio_data.two_b[i] = tmp;
-        }
+        if (tmp > SHRT_MAX)
+          tmp = SHRT_MAX;
+        else if (tmp < SHRT_MIN)
+          tmp = SHRT_MIN;
+
+        wav->audio_data.two_b[i] = tmp;
       }
       break;
   case 32: //32 bits
       for (int i=0; i < wav->samples_channel; ++i){
         tmp = set_volume * (int32_t)wav->audio_data.four_b[i]; 
-        if ((tmp < INT_MAX) && (tmp > INT_MIN)){
-          wav->audio_data.two_b[i] = tmp;
-        }
+        if (tmp > INT_MAX)
+          tmp = INT_MAX;
+        else if (tmp < INT_MIN)
+          tmp = INT_MIN;
+
+        wav->audio_data.four_b[i] = tmp;
       }
       break;
   default:
