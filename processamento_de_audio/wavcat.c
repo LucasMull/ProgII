@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
           cat->audio_data.one_b = realloc(cat->audio_data.one_b, cat->data.sub_chunk_2size); 
           assert(NULL != cat->audio_data.one_b);
 
-          memcpy(old_size + cat->audio_data.one_b, wav->audio_data.one_b, wav->data.sub_chunk_2size);
+          memcpy(&cat->audio_data.one_b[old_size], wav->audio_data.one_b, wav->data.sub_chunk_2size);
 
           wav_clean(wav);
         } else {
