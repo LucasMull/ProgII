@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <limits.h>
+#include <math.h> //pra round()
 #include <assert.h>
 
 #include "libwav.h"
@@ -16,20 +15,23 @@ int main(int argc, char *argv[])
     -o: desvio de output*/
   FILE *out_stream = stdout, *inp_stream = stdin;
   for (int i=1; i < argc; ++i){
-    if ('-' == argv[i][0]){
-      switch (argv[i][1]){
-      case 'i':
-          inp_stream = fopen(argv[++i],"rb");
-          assert(NULL != inp_stream);
-          break;
-      case 'o':
-          out_stream = fopen(argv[++i],"wb");
-          assert(NULL != out_stream);
-          break;
-      default:
-          fprintf(stderr,"ERRO: Opçao invalida\n\n");
-          exit(EXIT_FAILURE);
-      }
+    if ('-' != argv[i][0]){
+      fprintf(stderr,"ERRO: opcao invalida\n\n");
+      exit(EXIT_FAILURE);
+    }
+
+    switch (argv[i][1]){
+    case 'i':
+        inp_stream = fopen(argv[++i],"rb");
+        assert(NULL != inp_stream);
+        break;
+    case 'o':
+        out_stream = fopen(argv[++i],"wb");
+        assert(NULL != out_stream);
+        break;
+    default:
+        fprintf(stderr,"ERRO: opcao invalida\n\n");
+        exit(EXIT_FAILURE);
     }
   }
 
@@ -45,7 +47,7 @@ int main(int argc, char *argv[])
   /*seleciona amplitude absoluta máxima atingida entre todas as amostras,
     e normaliza todas a amostras a partir da aplicação de uma fórmula
     relacionando a amplitude máxima encontrada*/
-  int64_t max_amplitude = 0;
+  int_fast64_t max_amplitude = 0;
   switch (wav->fmt.bits_sample){
   case 8: //8 bits
       tmp.one_b = (int8_t*)wav->audio_data.one_b;
@@ -56,7 +58,7 @@ int main(int argc, char *argv[])
         }
       }
       for (int i=0; i < wav->samples_channel; ++i){
-        tmp.one_b[i] = round((CHAR_MAX * tmp.one_b[i]) / max_amplitude);
+        tmp.one_b[i] = round((INT8_MAX * tmp.one_b[i]) / max_amplitude);
       }
       break;
   case 16: //16 bits
@@ -68,7 +70,7 @@ int main(int argc, char *argv[])
         }
       }
       for (int i=0; i < wav->samples_channel; ++i){
-        tmp.two_b[i] = round((SHRT_MAX * tmp.two_b[i]) / max_amplitude);
+        tmp.two_b[i] = round((INT16_MAX * tmp.two_b[i]) / max_amplitude);
       }
       break;
   case 32: //32 bits
@@ -80,11 +82,11 @@ int main(int argc, char *argv[])
         }
       }
       for (int i=0; i < wav->samples_channel; ++i){
-        tmp.four_b[i] = round((INT_MAX * tmp.four_b[i]) / max_amplitude);
+        tmp.four_b[i] = round((INT32_MAX * tmp.four_b[i]) / max_amplitude);
       }
       break;
   default:
-      fprintf(stderr, "\nERRO: bit sample inválido: %d\n\n", wav->fmt.bits_sample);
+      fprintf(stderr, "\nERRO: bit sample invalido: %d\n\n", wav->fmt.bits_sample);
       exit(EXIT_FAILURE);
   }
 

@@ -15,20 +15,23 @@ int main(int argc, char *argv[])
     -o: desvio de output */  
   FILE *out_stream = stdout, *inp_stream = stdin;
   for (int i=1; i < argc; ++i){
-    if ('-' == argv[i][0]){
-      switch (argv[i][1]){
-        case 'i':
-          inp_stream = fopen(argv[++i],"rb");
-          assert(NULL != inp_stream);
-          break;
-        case 'o':
-          out_stream = fopen(argv[++i],"wb");
-          assert(NULL != out_stream);
-          break;
-        default:
-          fprintf(stderr,"ERRO: Opçao invalida\n\n");
-          exit(EXIT_FAILURE);
-      }
+    if ('-' != argv[i][0]){
+      fprintf(stderr,"ERRO: opçao invalida\n\n");
+      exit(EXIT_FAILURE);
+    }
+
+    switch (argv[i][1]){
+      case 'i':
+        inp_stream = fopen(argv[++i],"rb");
+        assert(NULL != inp_stream);
+        break;
+      case 'o':
+        out_stream = fopen(argv[++i],"wb");
+        assert(NULL != out_stream);
+        break;
+      default:
+        fprintf(stderr,"ERRO: opçao invalida\n\n");
+        exit(EXIT_FAILURE);
     }
   }
 

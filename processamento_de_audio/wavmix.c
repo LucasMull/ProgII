@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 #include <assert.h>
 
 #include "libwav.h"
@@ -20,15 +19,15 @@ int main(int argc, char *argv[])
   for (int i=1; i < argc; ++i){
     switch (argv[i][0]){
     case '-':
-        if ('o' == argv[i][1]){
-          assert(stdout == out_stream); //garante q -o só possa ser chamado uma vez
-
-          out_stream = fopen(argv[++i],"wb");
-          assert(NULL != out_stream);
-          break;
+        if ('o' != argv[i][1]){
+          fprintf(stderr,"ERRO: opcao invalida ou repetida\n\n");
+          exit(EXIT_FAILURE);
         }
-        fprintf(stderr,"ERRO: Opçao invalida ou repetida\n\n");
-        exit(EXIT_FAILURE);
+
+        assert(stdout == out_stream); //garante q -o só possa ser chamado uma vez
+        out_stream = fopen(argv[++i],"wb");
+        assert(NULL != out_stream);
+        break;
     default:
         inp_stream = fopen(argv[i], "rb");
         assert(NULL != inp_stream);
@@ -58,20 +57,20 @@ int main(int argc, char *argv[])
          
           /* baseada na equação de mixagem de aúdio de Viktor T. Toth
             http://www.vttoth.com/CMS/index.php/technical-notes/68 */
-          int64_t tmp_a, tmp_b, tmp_res;
+          int_fast64_t tmp_a, tmp_b, tmp_res;
           for (int j=0; j < wav->data.sub_chunk_2size; ++j){
-            tmp_a = CHAR_MAX+1 + (int8_t)mix->audio_data.one_b[j];
-            tmp_b = CHAR_MAX+1 + (int8_t)wav->audio_data.one_b[j];
+            tmp_a = INT8_MAX+1 + (int8_t)mix->audio_data.one_b[j];
+            tmp_b = INT8_MAX+1 + (int8_t)wav->audio_data.one_b[j];
 
-            if ((tmp_a < CHAR_MAX+1) || (tmp_b < CHAR_MAX+1)){
-              tmp_res = tmp_a * tmp_b / (CHAR_MAX+1);
+            if ((tmp_a < INT8_MAX+1) || (tmp_b < INT8_MAX+1)){
+              tmp_res = tmp_a * tmp_b / (INT8_MAX+1);
             } else {
-              tmp_res = 2 * (tmp_a + tmp_b) - (tmp_a * tmp_b) / (CHAR_MAX+1) - UCHAR_MAX+1;
+              tmp_res = (2 * (tmp_a + tmp_b) - (tmp_a * tmp_b) / (INT8_MAX+1)) - UINT8_MAX+1;
             }
 
-            if (UCHAR_MAX+1 == tmp_res)
-              tmp_res = UCHAR_MAX;
-            tmp_res -= CHAR_MAX+1;
+            if (UINT8_MAX+1 == tmp_res)
+              tmp_res = UINT8_MAX;
+            tmp_res -= INT8_MAX+1;
 
             mix->audio_data.one_b[j] = tmp_res; 
           }

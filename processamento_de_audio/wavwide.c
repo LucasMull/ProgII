@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <assert.h>
 
 #include "libwav.h"
@@ -17,27 +16,30 @@ int main(int argc, char *argv[])
   FILE *out_stream = stdout, *inp_stream = stdin;
   float amplify_ratio = 1.0;
   for (int i=1; i < argc; ++i){
-    if ('-' == argv[i][0]){
-      switch (argv[i][1]){
-      case 'l':
-          amplify_ratio = strtof(argv[++i], NULL);
-          if ((amplify_ratio < 0.0) || (amplify_ratio > 10.0)){
-            fprintf(stderr,"\nERRO: fator de amplificacao invalido\n\n");
-            exit(EXIT_FAILURE);
-          }
-          break;
-      case 'i':
-          inp_stream = fopen(argv[++i],"rb");
-          assert(NULL != inp_stream);
-          break;
-      case 'o':
-          out_stream = fopen(argv[++i],"wb");
-          assert(NULL != out_stream);
-          break;
-      default:
-          fprintf(stderr,"\nERRO: Opçao invalida\n\n");
+    if ('-' != argv[i][0]){
+      fprintf(stderr,"\nERRO: opcao invalida\n\n");
+      exit(EXIT_FAILURE);
+    }
+
+    switch (argv[i][1]){
+    case 'l':
+        amplify_ratio = strtof(argv[++i], NULL);
+        if ((amplify_ratio < 0.0) || (amplify_ratio > 10.0)){
+          fprintf(stderr,"\nERRO: fator de amplificacao invalido\n\n");
           exit(EXIT_FAILURE);
-      }
+        }
+        break;
+    case 'i':
+        inp_stream = fopen(argv[++i],"rb");
+        assert(NULL != inp_stream);
+        break;
+    case 'o':
+        out_stream = fopen(argv[++i],"wb");
+        assert(NULL != out_stream);
+        break;
+    default:
+        fprintf(stderr,"\nERRO: opcao invalida\n\n");
+        exit(EXIT_FAILURE);
     }
   }
 
@@ -48,8 +50,8 @@ int main(int argc, char *argv[])
   esquerdo e direito, é gerado um produto que ao ser subtraido/somado com
   os canais esquerdo e direito respecticamente resulta num efeito de
   "distanciamento" entre as saídas estéreo*/
-  int64_t diff;
-  int64_t l_tmp, r_tmp;
+  int_fast64_t diff;
+  int_fast64_t l_tmp, r_tmp;
   switch (wav->fmt.bits_sample){
   case 8:
       for (int i=0; i < wav->samples_channel; i += 2){
@@ -59,18 +61,18 @@ int main(int argc, char *argv[])
         diff = r_tmp - l_tmp;
 
         l_tmp -= amplify_ratio * diff;
-        if (l_tmp > CHAR_MAX)
-          l_tmp = CHAR_MAX;
-        else if (l_tmp < CHAR_MIN)
-          l_tmp = CHAR_MIN;
+        if (l_tmp > INT8_MAX)
+          l_tmp = INT8_MAX;
+        else if (l_tmp < INT8_MIN)
+          l_tmp = INT8_MIN;
 
         wav->audio_data.one_b[i] = l_tmp;
 
         r_tmp += amplify_ratio * diff;
-        if (r_tmp > CHAR_MAX)
-          r_tmp = CHAR_MAX;
-        else if (r_tmp < CHAR_MIN)
-          r_tmp = CHAR_MIN;
+        if (r_tmp > INT8_MAX)
+          r_tmp = INT8_MAX;
+        else if (r_tmp < INT8_MIN)
+          r_tmp = INT8_MIN;
 
         wav->audio_data.one_b[i+1] = r_tmp;
       }
@@ -83,18 +85,18 @@ int main(int argc, char *argv[])
         diff = r_tmp - l_tmp;
 
         l_tmp -= amplify_ratio * diff;
-        if (l_tmp > SHRT_MAX)
-          l_tmp = SHRT_MAX;
-        else if (l_tmp < SHRT_MIN)
-          l_tmp = SHRT_MIN;
+        if (l_tmp > INT16_MAX)
+          l_tmp = INT16_MAX;
+        else if (l_tmp < INT16_MIN)
+          l_tmp = INT16_MIN;
 
         wav->audio_data.two_b[i] = l_tmp;
 
         r_tmp += amplify_ratio * diff;
-        if (r_tmp > SHRT_MAX)
-          r_tmp = SHRT_MAX;
-        else if (r_tmp < SHRT_MIN)
-          r_tmp = SHRT_MIN;
+        if (r_tmp > INT16_MAX)
+          r_tmp = INT16_MAX;
+        else if (r_tmp < INT16_MIN)
+          r_tmp = INT16_MIN;
 
         wav->audio_data.two_b[i+1] = r_tmp;
       }
@@ -107,18 +109,18 @@ int main(int argc, char *argv[])
         diff = r_tmp - l_tmp;
 
         l_tmp -= amplify_ratio * diff;
-        if (l_tmp > INT_MAX)
-          l_tmp = INT_MAX;
-        else if (l_tmp < INT_MIN)
-          l_tmp = INT_MIN;
+        if (l_tmp > INT32_MAX)
+          l_tmp = INT32_MAX;
+        else if (l_tmp < INT32_MIN)
+          l_tmp = INT32_MIN;
 
         wav->audio_data.four_b[i] = l_tmp;
 
         r_tmp += amplify_ratio * diff;
-        if (r_tmp > INT_MAX)
-          r_tmp = INT_MAX;
-        else if (r_tmp < INT_MIN)
-          r_tmp = INT_MIN;
+        if (r_tmp > INT32_MAX)
+          r_tmp = INT32_MAX;
+        else if (r_tmp < INT32_MIN)
+          r_tmp = INT32_MIN;
 
         wav->audio_data.four_b[i+1] = r_tmp;
       }

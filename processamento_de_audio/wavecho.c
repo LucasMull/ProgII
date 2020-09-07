@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 #include <assert.h>
 
 #include "libwav.h"
@@ -24,7 +23,7 @@ int main(int argc, char *argv[])
       switch (argv[i][1]){
       case 't':
           delay_ms = strtol(argv[++i], NULL, 10);
-          if ((0 > delay_ms) || (UINT_MAX < delay_ms)){
+          if ((0 > delay_ms) || (UINT32_MAX < delay_ms)){
             fprintf(stderr,"\nERRO: delay menor que 0 ou overflow\n\n");
             exit(EXIT_FAILURE);
           }
@@ -32,7 +31,7 @@ int main(int argc, char *argv[])
       case 'l':
           echo_rate = strtof(argv[++i], NULL);
           if ((echo_rate < 0.0) || (echo_rate > 1.0)){
-            fprintf(stderr,"\nERRO: level de eco invalido\n\n");
+            fprintf(stderr,"\nERRO: nivel de eco invalido\n\n");
             exit(EXIT_FAILURE);
           }
           break;
@@ -59,13 +58,13 @@ int main(int argc, char *argv[])
   /*percorre o .wav byte a byte independente de sua qtd de bits/canal
     e aplicar uma fórmula a partir de um clone do audio original para
     colher os samples do atraso que serão inseridos ao aúdio original*/
-  int64_t tmp;
+  int_fast64_t tmp;
   for (int i = delay_ms + 1; i < wav->data.sub_chunk_2size; ++i){
     tmp = (int8_t)(clone[i] + echo_rate * clone[i - delay_ms]);
-    if (tmp > CHAR_MAX)
-      tmp = CHAR_MAX;
-    else if (tmp < CHAR_MIN)
-      tmp = CHAR_MIN;
+    if (tmp > INT8_MAX)
+      tmp = INT8_MAX;
+    else if (tmp < INT8_MIN)
+      tmp = INT8_MIN;
 
     wav->audio_data.one_b[i] = tmp;
   }

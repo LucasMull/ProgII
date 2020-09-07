@@ -1,16 +1,16 @@
 //GRR20197160 Lucas Müller
 
-#include <inttypes.h>
+#include <stdint.h>
 
 
 typedef struct {
-  char chunk_id[4];     //identifica tipo de arquivo
+  signed char chunk_id[4];     //identifica tipo de arquivo
   uint32_t chunk_size;  //tamanho do arquivo em bytes (s/id e size)
-  char format[4];       //define formato do restante do conteúdo
+  signed char format[4];       //define formato do restante do conteúdo
 } wav_riff_st;
 
 typedef struct {
-  char sub_chunk_1id[4];        //cabeçalho do chunk
+  signed char sub_chunk_1id[4];        //cabeçalho do chunk
   uint32_t sub_chunk_1size;     //tamanho deste chunk
   uint16_t audio_format;        //codificação utilizada
   uint16_t num_channels;        //qtd canais de áudio
@@ -21,7 +21,7 @@ typedef struct {
 } wav_fmt_st;
 
 typedef struct {
-  char sub_chunk_2id[4];        //cabeçalho do chunk;
+  signed char sub_chunk_2id[4];        //cabeçalho do chunk;
   uint32_t sub_chunk_2size;     //espaço ocupado pelas amostras(bytes)
 } wav_data_st;
 

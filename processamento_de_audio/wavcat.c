@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
           assert(NULL != out_stream);
           break;
         }
-        fprintf(stderr,"ERRO: Opçao invalida ou repetida\n\n");
+        fprintf(stderr,"ERRO: opcao invalida ou repetida\n\n");
         exit(EXIT_FAILURE);
     default:
         inp_stream = fopen(argv[i], "rb");
