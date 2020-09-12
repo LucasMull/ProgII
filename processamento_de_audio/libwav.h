@@ -1,7 +1,9 @@
 //GRR20197160 Lucas Müller
 
-#include <stdint.h>
+#ifndef LIBWAV_COMMON_H_
+#define LIBWAV_COMMON_H_
 
+#include <stdint.h>
 
 typedef struct {
   signed char chunk_id[4];     //identifica tipo de arquivo
@@ -41,3 +43,5 @@ typedef struct {
 
 wav_st* wav_init(FILE* wav_sample);
 void wav_clean(wav_st* wav);
+
+#endif

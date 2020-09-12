@@ -1,5 +1,8 @@
 //GRR20197160 Lucas Müller
 
+#ifndef DICIONARIO_COMMON_H_
+#define DICIONARIO_COMMON_H
+
 #define MAX_WORD_SIZE 50
 
 typedef struct {
@@ -22,3 +25,5 @@ int dictionary_bsearch(const dictionary_st *kdictionary, const char *kword);
   comparações, out_stream indica a stream em que o
   texto com marcações será escrito*/
 void stream_misspell_check(const dictionary_st *kdictionary, FILE* out_stream);
+
+#endif
