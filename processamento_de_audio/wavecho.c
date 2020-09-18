@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
           assert(NULL != out_stream);
           break;
       default:
-          fprintf(stderr,"\nERRO: Opçao invalida\n\n");
+          fprintf(stderr,"\nERRO: Opcao invalida\n\n");
           exit(EXIT_FAILURE);
       }
     }
@@ -56,8 +56,9 @@ int main(int argc, char *argv[])
   memcpy(clone, wav->audio_data.one_b, wav->data.sub_chunk_2size);
   
   /*percorre o .wav byte a byte independente de sua qtd de bits/canal
-    e aplicar uma fórmula a partir de um clone do audio original para
-    colher os samples do atraso que serão inseridos ao aúdio original*/
+    e aplica a fórmula de echo por meio de um clone do audio original,
+    à uma variável temporária, a fim de tratar os samples para overflow 
+    antes de inserir no audio original*/
   int_fast64_t tmp;
   for (int i = delay_ms + 1; i < wav->data.sub_chunk_2size; ++i){
     tmp = (int8_t)(clone[i] + echo_rate * clone[i - delay_ms]);

@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
   wav_st *wav = wav_init(inp_stream);
 
   /*realiza a multiplicação em cada canal pelo volume fornecido,
-    e ignorando casos em que ocorra overflow/underflow*/
+    e trata devidamente casos de overflow/underflow*/
   int_fast64_t tmp;
   switch (wav->fmt.bits_sample){
   case 8: //8 bits

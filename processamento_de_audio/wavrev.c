@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
   assert(NULL != reverse_audio_data);
   /*para este laço, a leitura é feita byte a byte, portanto para
     conciliar .wav de diferentes qtd de bits por canal, é necessário
-    reservar uma variável bytes_sample se movimentar apropriadamente 
-    pelos índices.
+    reservar uma variável bytes_sample para se movimentar 
+    apropriadamente pelos índices.
     
     sample_index indica quando começa a leitura de uma nova amostra,
     e index cálcula um índice para fazer o armazenamento inverso*/
