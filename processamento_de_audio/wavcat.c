@@ -15,7 +15,9 @@ int main(int argc, char *argv[])
     default: considera que o arg atual se trata de um arquivo .wav a
       ser aberto e manipulado.  */  
   FILE *out_stream = stdout, *inp_stream;
-  wav_st *cat = NULL, *wav;
+  wav_st *wav_array[argc]; //no caso de -o incluso vai ter 1 indice a mais (8 bytes apenas)
+  wav_st header = {0}; //começa com atributos setados em 0 para identificar primeiro loop
+  int num_wav = 0; //total de struct wav apontados pelo wav_array (num_wav < argc)
   for (int i=1; i < argc; ++i){
     switch (argv[i][0]){
     case '-':
@@ -32,39 +34,36 @@ int main(int argc, char *argv[])
         inp_stream = fopen(argv[i], "rb");
         assert(NULL != inp_stream);
 
-        wav = wav_init(inp_stream);
-        
-        /*soma as informações referentes à tamanho do header do arquivo
-          .wav obtido, com as do arquivo principal (cat), realoca espaço
-          de acordo com o novo tamanho de aúdio, e copia o conteúdo do
-          arquivo obtido ao final do arquivo original (concatenação)*/
-        if (NULL != cat){ 
-          assert(cat->fmt.sample_rate == wav->fmt.sample_rate);
+        /* os valores do header do wav atual referente a tamanho
+          são somados aos valores anteriores */
+        wav_array[num_wav] = wav_init(inp_stream);
+        if (0 != header.data.sub_chunk_2size){
+          //se sample rate for diferente do header então não é possível concatenar
+          assert(header.fmt.sample_rate == wav_array[num_wav]->fmt.sample_rate);
 
-          int old_size = cat->data.sub_chunk_2size;
-
-          cat->riff.chunk_size += wav->riff.chunk_size; 
-          cat->data.sub_chunk_2size += wav->data.sub_chunk_2size; 
-          cat->samples_channel += wav->samples_channel;
-          cat->audio_data.one_b = realloc(cat->audio_data.one_b, cat->data.sub_chunk_2size); 
-          assert(NULL != cat->audio_data.one_b);
-
-          memcpy(&cat->audio_data.one_b[old_size], wav->audio_data.one_b, wav->data.sub_chunk_2size);
-
-          wav_clean(wav);
-        } else {
-          cat = wav; //primeiro cat simplesmente recebe o wav
+          header.riff.chunk_size += wav_array[num_wav]->riff.chunk_size; 
+          header.data.sub_chunk_2size += wav_array[num_wav]->data.sub_chunk_2size; 
+          header.samples_channel += wav_array[num_wav]->samples_channel;
+        } else { //no primeiro wav lido, header simplesmente recebe uma copia do cabeçalho
+          memcpy(&header, wav_array[num_wav], 44);
         }
+
+        ++num_wav;
 
         fclose(inp_stream);
         break;
     }
   }
 
-  fwrite(cat, 44, 1, out_stream);
-  fwrite(cat->audio_data.one_b, cat->data.sub_chunk_2size, 1, out_stream);
+  /* escreve cabeçalho com os valores referente ao tamanho total das concatenações calculado, e
+    então escreve audio_data de cada wav, em ordem, com o cuidado de liberar da memória após
+    cada escrita */
+  fwrite(&header, 44, 1, out_stream);
+  for (int i=0; i < num_wav; ++i){
+    fwrite(wav_array[i]->audio_data.one_b, wav_array[i]->data.sub_chunk_2size, 1, out_stream);
+    wav_clean(wav_array[i]);
+  }
 
-  wav_clean(cat);
   fclose(out_stream);
 
   return EXIT_SUCCESS;
