@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
       ser aberto e manipulado.  */  
   FILE *out_stream = stdout, *inp_stream;
   wav_st *wav_array[argc]; //no caso de -o incluso vai ter 1 indice a mais (8 bytes apenas)
-  wav_st header = {0}; //começa com atributos setados em 0 para identificar primeiro loop
+  wav_st header; //header para o novo arquivo wav gerado pela concatenação
   int num_wav = 0; //total de struct wav apontados pelo wav_array (num_wav < argc)
   for (int i=1; i < argc; ++i){
     switch (argv[i][0]){
