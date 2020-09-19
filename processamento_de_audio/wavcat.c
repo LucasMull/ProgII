@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         /* os valores do header do wav atual referente a tamanho
           são somados aos valores anteriores */
         wav_array[num_wav] = wav_init(inp_stream);
-        if (0 != header.data.sub_chunk_2size){
+        if (0 != num_wav){
           //se sample rate for diferente do header então não é possível concatenar
           assert(header.fmt.sample_rate == wav_array[num_wav]->fmt.sample_rate);
 
