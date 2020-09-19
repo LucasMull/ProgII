@@ -38,23 +38,15 @@ int main(int argc, char *argv[])
           as do arquivo principal (mix), não há um limite de quantas
           somas podem ser realizadas no mix*/
         if (NULL != mix){ 
-          /*se o arquivo obtido for maior do que o principal, realocar
-            espaço para que o original tenha um valor exato ao do obtido
-            e atualizar informações do header*/
           assert(mix->fmt.sample_rate == wav->fmt.sample_rate);
+          /* se o arquivo obtido for maior do que o principal,
+            realizar um simples swap entre os dois, para evitar
+            stack overflow na soma das samples */
           if (mix->riff.chunk_size < wav->riff.chunk_size){
-            int old_size = mix->data.sub_chunk_2size;
-
-            mix->riff.chunk_size = wav->riff.chunk_size; 
-            mix->data.sub_chunk_2size = wav->data.sub_chunk_2size; 
-            mix->samples_channel = wav->samples_channel;
-            mix->audio_data.one_b = realloc(mix->audio_data.one_b, mix->data.sub_chunk_2size); 
-            assert(NULL != mix->audio_data.one_b);
-
-            //seta 0 em todo espaço novo alocado pra não somar com lixo de memória
-            memset(&mix->audio_data.one_b[old_size], 0, mix->data.sub_chunk_2size - old_size);
+            wav_st *tmp = mix;
+            mix = wav;
+            wav = tmp;
           }
-         
           /* baseada na equação de mixagem de aúdio de Viktor T. Toth
             http://www.vttoth.com/CMS/index.php/technical-notes/68 */
           int_fast64_t tmp_a, tmp_b, tmp_res;
