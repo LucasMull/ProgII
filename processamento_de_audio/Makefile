@@ -14,15 +14,23 @@ EXEC = 	wavcat \
 	wavinfo
 
 MAIN = libwav.c
+OBJDIR = obj
 
 .PHONY : all clean purge
 
-all: $(EXEC)
+all: mkdir $(EXEC)
 
-$(EXEC): %: %.c
+mkdir:
+	-mkdir -p $(OBJDIR)
+
+$(EXEC): %: $(OBJDIR)/%.o
 	$(CC) $(CFLAGS) -o $@ $< $(MAIN) $(LDLIBS)
+
+$(OBJDIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	-rm -rf $(EXEC)
 
 purge: clean
+	-rm -rdf $(OBJDIR)
